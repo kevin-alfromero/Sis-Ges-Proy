@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ocultar errores de hidratación */
+[data-hydration-error] {
+  display: none !important;
+}
+
+:root {
+  --btn-primary: #22c55e; /* Verde para modo claro */
+  --btn-primary-hover: #16a34a;
+}
+
+.dark {
+  --btn-primary: #38bdf8; /* Celeste para modo oscuro */
+  --btn-primary-hover: #0ea5e9;
+}
+
+.btn-primary {
+  background-color: var(--btn-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--btn-primary-hover);
+}
