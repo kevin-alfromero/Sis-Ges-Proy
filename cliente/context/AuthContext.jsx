@@ -19,27 +19,31 @@ export const AuthProvider = ({ children }) => {
     }
     setLoading(false);
   }, []);
-
-  // Función para INICIAR SESIÓN
+  // Función para INICIAR SESIÓN (Versión Segura y a prueba de fallos)
   const login = async (email, password) => {
     try {
-      const response = await axios.get(
-        `http://localhost:3001/users?email=${email}&password=${password}`,
+      // 1. Pedimos la lista completa de usuarios al servidor
+      const response = await axios.get("http://localhost:3001/users");
+
+      // 2. Usamos JavaScript puro para buscar la coincidencia exacta (texto con texto)
+      const foundUser = response.data.find(
+        (user) => user.email === email && user.password === password,
       );
 
-      if (response.data.length > 0) {
-        const loggedUser = response.data[0];
-        setUser(loggedUser); // Guardamos en memoria
-        localStorage.setItem("userSession", JSON.stringify(loggedUser)); // Guardamos en el navegador
+      // 3. Si encontramos al usuario, iniciamos sesión
+      if (foundUser) {
+        setUser(foundUser);
+        localStorage.setItem("userSession", JSON.stringify(foundUser));
         return { success: true };
       }
+
+      // Si no hay coincidencia, mostramos el error
       return { success: false, message: "Correo o contraseña incorrectos." };
     } catch (error) {
       console.error("Error en login:", error);
       return { success: false, message: "Error al conectar con el servidor." };
     }
   };
-
   // Función para REGISTRARSE
   const register = async (name, email, password, role = "Usuario") => {
     try {
