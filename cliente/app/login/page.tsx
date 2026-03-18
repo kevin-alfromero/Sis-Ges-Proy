@@ -1,5 +1,6 @@
 "use client"; // Obligatorio porque usaremos interactividad (formularios y estados)
 
+import { useRouter } from "next/navigation";
 import { useState, useContext } from "react";
 // Importamos el contexto subiendo dos niveles en las carpetas (../../)
 import { AuthContext } from "../../context/AuthContext";
@@ -9,6 +10,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMensaje, setErrorMensaje] = useState("");
+  const router = useRouter();
 
   // Traemos la función 'login' de tu contexto
   const { login } = useContext(AuthContext);
@@ -22,7 +24,7 @@ export default function LoginPage() {
     const resultado = await login(email, password);
 
     if (resultado.success) {
-      alert("¡Inicio de sesión exitoso, Roger!");
+      router.push("/"); // Esto te envía a la página principal
       // codigo que lleval usuario al Dashboard
     } else {
       setErrorMensaje(resultado.message); // Mostramos si la contraseña o correo están mal
