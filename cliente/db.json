@@ -1,0 +1,13 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Roger Ramirez",
+      "email": "roger@admin.com",
+      "password": "123",
+      "role": "Gerente"
+    }
+  ],
+  "projects": [],
+  "tasks": []
+}
