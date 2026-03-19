@@ -5,126 +5,125 @@ import axios from 'axios';
 const API_URL = 'http://localhost:4000/proyectos';
 
 export default function GestionProyectos() {
+  const [rolUsuario, setRolUsuario] = useState('usuario'); 
   const [proyectos, setProyectos] = useState([]);
   const [form, setForm] = useState({ nombre: '', descripcion: '', progreso: 0 });
   const [editandoId, setEditandoId] = useState(null);
 
-  const cargarProyectos = async () => {
+  useEffect(() => {
+    const authRole = localStorage.getItem('role') || localStorage.getItem('userRole');
+    if (authRole) {
+      setRolUsuario(authRole.toLowerCase());
+    }
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
     try {
       const res = await axios.get(API_URL);
       setProyectos(res.data);
-    } catch (error) { console.error(error); }
+    } catch (err) {
+      console.error("Error de conexión");
+    }
   };
-
-  useEffect(() => { cargarProyectos(); }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editandoId) {
-      await axios.put(`${API_URL}/${editandoId}`, form);
-      setEditandoId(null);
-    } else {
-      await axios.post(API_URL, form);
+    if (rolUsuario !== 'gerente') return;
+
+    try {
+      if (editandoId) {
+        await axios.put(`${API_URL}/${editandoId}`, form);
+        setEditandoId(null);
+      } else {
+        await axios.post(API_URL, form);
+      }
+      setForm({ nombre: '', descripcion: '', progreso: 0 });
+      fetchData();
+    } catch (err) {
+      console.error("Error al procesar solicitud");
     }
-    setForm({ nombre: '', descripcion: '', progreso: 0 });
-    cargarProyectos();
+  };
+
+  const onDelete = async (id) => {
+    if (window.confirm('¿Confirmar eliminación?')) {
+      try {
+        await axios.delete(`${API_URL}/${id}`);
+        fetchData();
+      } catch (err) {
+        console.error("Error al eliminar");
+      }
+    }
   };
 
   return (
-    <div className="p-8 max-w-5xl mx-auto bg-gray-50 min-h-screen font-sans text-slate-900">
-      <header className="flex justify-between items-center mb-10 border-b pb-5">
-        <div>
-          <h1 className="text-4xl font-extrabold text-slate-800 tracking-tight">Gestión de Proyectos</h1>
-          <p className="text-slate-500">Panel de administración para Gerentes</p>
-        </div>
-        <div className="bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-sm font-bold uppercase">
-          Modo Edición
-        </div>
+    <div className="p-8 max-w-6xl mx-auto bg-white min-h-screen font-sans text-black">
+      <header className="mb-12 border-b-2 border-black pb-6">
+        <h1 className="text-4xl font-black uppercase tracking-tighter">Gestión de Proyectos</h1>
+        <p className="text-gray-500 text-sm mt-2 font-medium">Sistema Interno / Acceso: {rolUsuario}</p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* FORMULARIO LATERAL */}
-        <div className="lg:col-span-1">
-          <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-xl border border-slate-100 sticky top-5">
-            <h2 className="text-xl font-bold mb-6 text-slate-700">
-              {editandoId ? '📝 Editar Proyecto' : ' Nuevo Proyecto'}
-            </h2>
-            
-            <div className="space-y-5">
-              <div>
-                <label className="block text-sm font-semibold mb-2">Nombre del Proyecto</label>
-                <input 
-                  className="w-full border-2 border-slate-200 p-3 rounded-xl focus:border-blue-500 outline-none transition"
-                  value={form.nombre} 
-                  onChange={e => setForm({...form, nombre: e.target.value})} 
-                  placeholder="Ej: App Móvil"
-                  required 
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Progreso ({form.progreso}%)</label>
-                <input 
-                  type="range"
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                  min="0" max="100"
-                  value={form.progreso} 
-                  onChange={e => setForm({...form, progreso: e.target.value})} 
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Descripción</label>
-                <textarea 
-                  className="w-full border-2 border-slate-200 p-3 rounded-xl focus:border-blue-500 outline-none transition h-32"
-                  value={form.descripcion} 
-                  onChange={e => setForm({...form, descripcion: e.target.value})} 
-                  placeholder="¿De qué trata este proyecto?"
-                />
-              </div>
-
-              <button type="submit" className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-all shadow-lg active:scale-95">
-                {editandoId ? 'Guardar Cambios' : 'Crear Proyecto'}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        {/* LISTADO DE TARJETAS */}
-        <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-xl font-bold text-slate-700 mb-4">Proyectos Activos</h2>
-          {proyectos.map(p => (
-            <div key={p.id} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+        {rolUsuario === 'gerente' && (
+          <div className="lg:col-span-1">
+            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+              <h2 className="text-xs font-black uppercase mb-6 tracking-widest">Control de Registros</h2>
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-800">{p.nombre}</h3>
-                  <p className="text-slate-500 text-sm mt-1">{p.descripcion}</p>
+                  <input 
+                    className="w-full bg-transparent border-b border-gray-300 p-2 focus:border-black outline-none transition text-sm"
+                    value={form.nombre} 
+                    onChange={e => setForm({...form, nombre: e.target.value})} 
+                    placeholder="NOMBRE DEL PROYECTO" required 
+                  />
                 </div>
-                <div className="flex space-x-2">
-                  <button onClick={() => {setEditandoId(p.id); setForm(p)}} className="p-2 hover:bg-yellow-50 rounded-lg text-yellow-600 transition">Editar</button>
-                  <button onClick={async () => { if(confirm('¿Borrar?')) { await axios.delete(`${API_URL}/${p.id}`); cargarProyectos(); } }} className="p-2 hover:bg-red-50 rounded-lg text-red-600 transition">Eliminar</button>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-[10px] font-bold">
+                    <span>PROGRESO</span>
+                    <span>{form.progreso}%</span>
+                  </div>
+                  <input 
+                    type="range" className="w-full h-1 bg-gray-200 rounded-lg appearance-none accent-black"
+                    min="0" max="100" value={form.progreso} 
+                    onChange={e => setForm({...form, progreso: e.target.value})} 
+                  />
+                </div>
+                <textarea 
+                  className="w-full bg-transparent border border-gray-300 p-3 rounded-md focus:border-black outline-none h-28 text-sm"
+                  value={form.descripcion} 
+                  onChange={e => setForm({...form, descripcion: e.target.value})}
+                  placeholder="DESCRIPCIÓN TÉCNICA..."
+                />
+                <button type="submit" className="w-full bg-black text-white text-xs font-black py-4 rounded-md hover:bg-gray-800 transition">
+                  {editandoId ? 'ACTUALIZAR DATOS' : 'CREAR REGISTRO'}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        <div className={`${rolUsuario === 'gerente' ? 'lg:col-span-3' : 'lg:col-span-4'} space-y-6`}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {proyectos.map(p => (
+              <div key={p.id} className="border border-gray-200 p-6 rounded-lg hover:border-black transition-colors bg-white">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="font-black text-lg uppercase tracking-tight">{p.nombre}</h3>
+                    <p className="text-gray-400 text-[11px] mt-1 leading-relaxed">{p.descripcion}</p>
+                  </div>
+                  {rolUsuario === 'gerente' && (
+                    <div className="flex gap-4">
+                      <button onClick={() => {setEditandoId(p.id); setForm(p)}} className="text-[10px] font-black border-b border-black">EDITAR</button>
+                      <button onClick={() => onDelete(p.id)} className="text-[10px] font-black text-gray-400 hover:text-black transition">BORRAR</button>
+                    </div>
+                  )}
+                </div>
+                <div className="w-full bg-gray-100 h-[2px] mt-8">
+                  <div className="h-full bg-black transition-all duration-1000" style={{width: `${p.progreso}%`}}></div>
                 </div>
               </div>
-              
-              <div className="mt-6">
-                <div className="flex justify-between text-xs font-bold mb-2">
-                  <span>PROGRESO</span>
-                  <span>{p.progreso}%</span>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-3">
-                  <div 
-                    className={`h-3 rounded-full transition-all duration-500 ${p.progreso > 70 ? 'bg-green-500' : p.progreso > 30 ? 'bg-blue-500' : 'bg-amber-500'}`}
-                    style={{width: `${p.progreso}%`}}
-                  ></div>
-                </div>
-              </div>
-            </div>
-          ))}
-          {proyectos.length === 0 && (
-            <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
-              <p className="text-slate-400">No hay proyectos para mostrar aún.</p>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
       </div>
     </div>
