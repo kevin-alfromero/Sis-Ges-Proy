@@ -20,9 +20,23 @@
       "email": "pedro@admin.com",
       "password": "12345",
       "role": "Gerente"
+    },
+   
+  ],
+  "projects": [
+    {
+      "id": "15e1",
+      "name": "Server ",
+      "status": "En Progreso",
+      "date": "2026-03-17"
+    },
+    {
+      "id": "1c8c",
+      "name": "Server ",
+      "status": "Pendiente",
+      "date": "2026-03-03"
     }
   ],
-  "projects": [],
   "tasks": [],
   "$schema": "./node_modules/json-server/schema.json"
 }

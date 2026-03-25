@@ -1,11 +1,10 @@
-"use client";
+"use client"; 
 
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Link from "next/link";
 
 export default function Home() {
-  // Traemos los datos del usuario actual y la función de cerrar sesión
   const { user, logout } = useContext(AuthContext);
 
   return (
@@ -25,14 +24,24 @@ export default function Home() {
               Tu rol actual es: <span className="font-bold">{user.role}</span>
             </p>
 
-            <div className="mt-8">
+            {/* --- ESTO ES LO NUEVO: BOTONES DE NAVEGACIÓN --- */}
+            <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+              <Link
+                href="/proyectos"
+                className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-all font-bold shadow-md"
+              >
+                Ir a Proyectos
+              </Link>
+              
               <button
                 onClick={logout}
-                className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                className="px-6 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
               >
                 Cerrar Sesión
               </button>
             </div>
+            {/* ----------------------------------------------- */}
+
           </div>
         ) : (
           /* SI NADIE HA INICIADO SESIÓN */

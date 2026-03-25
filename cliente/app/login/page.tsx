@@ -24,7 +24,7 @@ export default function LoginPage() {
     const resultado = await login(email, password);
 
     if (resultado.success) {
-      router.push("/"); // Esto te envía a la página principal
+      router.push("/"); // página principal
       // codigo que lleval usuario al Dashboard
     } else {
       setErrorMensaje(resultado.message); // Mostramos si la contraseña o correo están mal
