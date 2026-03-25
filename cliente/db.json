@@ -22,7 +22,20 @@
       "role": "Gerente"
     }
   ],
-  "projects": [],
+  "projects": [
+    {
+      "id": "fa5a",
+      "name": "app 2",
+      "status": "Pendiente",
+      "date": "2026-03-08"
+    },
+    {
+      "id": "0756",
+      "name": "prueba",
+      "status": "En Progreso",
+      "date": "2026-03-27"
+    }
+  ],
   "tasks": [],
   "$schema": "./node_modules/json-server/schema.json"
 }
