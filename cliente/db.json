@@ -1,0 +1,42 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Roger Ramirez",
+      "email": "roger@admin.com",
+      "password": "123",
+      "role": "Gerente"
+    },
+    {
+      "id": "26f5",
+      "name": "Henry Peña",
+      "email": "henry@usuario.com",
+      "password": "321",
+      "role": "Usuario"
+    },
+    {
+      "id": "949e",
+      "name": "Pedro picapiedra",
+      "email": "pedro@admin.com",
+      "password": "12345",
+      "role": "Gerente"
+    },
+   
+  ],
+  "projects": [
+    {
+      "id": "15e1",
+      "name": "Server ",
+      "status": "En Progreso",
+      "date": "2026-03-17"
+    },
+    {
+      "id": "1c8c",
+      "name": "Server ",
+      "status": "Pendiente",
+      "date": "2026-03-03"
+    }
+  ],
+  "tasks": [],
+  "$schema": "./node_modules/json-server/schema.json"
+}
