@@ -3,6 +3,8 @@
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
+const API_URL = "http://localhost:3001/api";
+
 // 1. Creamos el contexto (el "megáfono" global)
 export const AuthContext = createContext();
 
@@ -23,52 +25,44 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       // 1. Pedimos la lista completa de usuarios al servidor
-      const response = await axios.get("http://localhost:3001/users");
-
-      // 2. Usamos JavaScript puro para buscar la coincidencia exacta (texto con texto)
-      const foundUser = response.data.find(
-        (user) => user.email === email && user.password === password,
-      );
-
-      // 3. Si encontramos al usuario, iniciamos sesión
-      if (foundUser) {
-        setUser(foundUser);
-        localStorage.setItem("userSession", JSON.stringify(foundUser));
-        return { success: true };
-      }
-
-      // Si no hay coincidencia, mostramos el error
-      return { success: false, message: "Correo o contraseña incorrectos." };
+     const response = await axios.post(`${API_URL}/users/login`, {
+        email,
+        password,
+      });
+        // Si encontramos al usuario, iniciamos sesión
+      const loggedUser = response.data.user;
+      setUser(loggedUser);
+      localStorage.setItem("userSession", JSON.stringify(loggedUser));
+      return { success: true };
+       // Si no hay coincidencia, mostramos el error
     } catch (error) {
-      console.error("Error en login:", error);
-      return { success: false, message: "Error al conectar con el servidor." };
+      const mensaje =
+        error.response?.data?.error || "Error al conectar con el servidor.";
+      return { success: false, message: mensaje };
     }
   };
+  
   // Función para REGISTRARSE
   const register = async (name, email, password, role = "Usuario") => {
-    try {
-      // Verificamos que el correo no exista ya
-      const checkEmail = await axios.get(
-        `http://localhost:3001/users?email=${email}`,
-      );
-      if (checkEmail.data.length > 0) {
-        return { success: false, message: "Este correo ya está registrado." };
-      }
-
-      // Creamos el usuario
-      const newUser = { name, email, password, role };
-      const response = await axios.post("http://localhost:3001/users", newUser);
-
-      // Auto-iniciamos sesión después de registrar
-      setUser(response.data);
-      localStorage.setItem("userSession", JSON.stringify(response.data));
+        try {
+          // Verificamos que el correo no exista ya
+        const response = await axios.post(`${API_URL}/users/register`, {
+        name,
+        email,
+        password,
+        role,
+      });
+      
+      const newUser = response.data.user;
+      setUser(newUser);
+      localStorage.setItem("userSession", JSON.stringify(newUser));
       return { success: true };
     } catch (error) {
-      console.error("Error en registro:", error);
-      return { success: false, message: "Error al crear la cuenta." };
+      const mensaje =
+        error.response?.data?.error || "Error al crear la cuenta.";
+      return { success: false, message: mensaje };
     }
   };
-
   // Función para CERRAR SESIÓN
   const logout = () => {
     setUser(null);

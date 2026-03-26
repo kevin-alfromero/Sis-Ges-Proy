@@ -1,0 +1,30 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Roger Ramirez",
+      "email": "roger@admin.com",
+      "password": "123",
+      "role": "Gerente",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "name": "Henry Peña",
+      "email": "henry@usuario.com",
+      "password": "321",
+      "role": "Usuario",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "mmzu3zwygjvs",
+      "name": "Krissia Fernandez",
+      "email": "mail@mail.com",
+      "password": "12345",
+      "role": "Gerente",
+      "createdAt": "2026-03-21T04:35:12.658Z"
+    }
+  ],
+  "projects": [],
+  "tasks": []
+}
