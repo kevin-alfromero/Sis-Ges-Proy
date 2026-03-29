@@ -73,7 +73,7 @@ router.put("/:id", (req, res) => {
   }
 
   const { name, description, status } = req.body;
-  const statusValidos = ["Activo", "En Pausa", "Completado", "Cancelado"];
+  const statusValidos = ["En Progreso", "Pendientes", "Finalizado",];
 
   if (status && !statusValidos.includes(status)) {
     return res.status(400).json({ error: `Estado inválido. Use: ${statusValidos.join(", ")}` });

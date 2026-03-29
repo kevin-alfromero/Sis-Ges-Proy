@@ -23,8 +23,27 @@
       "password": "12345",
       "role": "Gerente",
       "createdAt": "2026-03-21T04:35:12.658Z"
+    },
+    {
+      "id": "mnbbdt7jn6cc",
+      "name": "Kate",
+      "email": "23mail@mail.com",
+      "password": "123456",
+      "role": "Usuario",
+      "createdAt": "2026-03-29T05:24:11.935Z"
     }
   ],
-  "projects": [],
+  "projects": [
+    {
+      "id": "mnbendfhiokj",
+      "name": "test",
+      "description": "",
+      "managerId": "mmzu3zwygjvs",
+      "managerName": "Krissia Fernandez",
+      "status": "Activo",
+      "createdAt": "2026-03-29T06:55:36.893Z",
+      "updatedAt": "2026-03-29T06:55:36.893Z"
+    }
+  ],
   "tasks": []
 }
