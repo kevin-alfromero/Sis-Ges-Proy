@@ -20,20 +20,54 @@
       "email": "pedro@admin.com",
       "password": "12345",
       "role": "Gerente"
+    },
+    {
+      "id": "874b",
+      "name": "Henry PeñaRamirez",
+      "email": "PR251335@udb.edu.sv",
+      "password": "12345",
+      "role": "Gerente"
+    },
+    {
+      "id": "eaa5",
+      "name": "Marcos Ramos ",
+      "email": "marcos@gamil",
+      "password": "2020",
+      "role": "Usuario"
+    },
+    {
+      "id": "fa43",
+      "name": "Henry Peña",
+      "email": "PR2513335@udb.edu.sv",
+      "password": "123",
+      "role": "Gerente"
+    },
+    {
+      "id": "cdb3",
+      "name": "Henry Peña",
+      "email": "PR25131235@udb.edu.sv",
+      "password": "123",
+      "role": "Gerente"
     }
   ],
   "projects": [
     {
       "id": "fa5a",
       "name": "app 2",
-      "status": "Pendiente",
+      "status": "Finalizado",
       "date": "2026-03-08"
     },
     {
-      "id": "0756",
-      "name": "prueba",
+      "id": "de60",
+      "name": "Prueba 1 ",
       "status": "En Progreso",
       "date": "2026-03-27"
+    },
+    {
+      "id": "4681",
+      "name": "pRUEBA 3 ",
+      "status": "Finalizado",
+      "date": "2026-03-25"
     }
   ],
   "tasks": [],
