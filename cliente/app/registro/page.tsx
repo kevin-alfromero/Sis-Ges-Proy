@@ -40,7 +40,7 @@ export default function RegistroPage() {
 
         <form onSubmit={manejarRegistro} className="mt-6">
           <div className="mt-4">
-            <label
+           <label
               className="block text-gray-700 font-medium mb-2"
               htmlFor="name"
             >
@@ -50,7 +50,8 @@ export default function RegistroPage() {
               type="text"
               id="name"
               placeholder="Ej. Roger Ramirez"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              // Agregamos text-gray-900, placeholder:text-gray-400 y bg-white
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900 placeholder:text-gray-400 bg-white"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -68,13 +69,13 @@ export default function RegistroPage() {
               type="email"
               id="email"
               placeholder="ejemplo@correo.com"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              // Agregamos text-gray-900 y placeholder:text-gray-400
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400 bg-white"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-
           <div className="mt-4">
             <label
               className="block text-gray-700 font-medium mb-2"
@@ -86,7 +87,7 @@ export default function RegistroPage() {
               type="password"
               id="password"
               placeholder="••••••••"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400 bg-white"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -102,7 +103,8 @@ export default function RegistroPage() {
             </label>
             <select
               id="role"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+              // Solo agregamos text-gray-900 (ya tenías bg-white)
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white text-gray-900"
               value={role}
               onChange={(e) => setRole(e.target.value)}
             >

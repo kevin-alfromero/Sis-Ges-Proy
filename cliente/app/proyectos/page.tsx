@@ -1,13 +1,14 @@
 'use client';
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../../context/AuthContext';
+import Link from 'next/link';
 
 export default function ProyectosPage() {
   const { user } = useContext(AuthContext);
   const [proyectos, setProyectos] = useState([]);
   const [mostrarForm, setMostrarForm] = useState(false);
   // Diseño: Agregado campo 'date' al estado inicial
-  const [nuevoProyecto, setNuevoProyecto] = useState({ name: '', status: 'En Progreso', date: '' }); 
+ const [nuevoProyecto, setNuevoProyecto] = useState({ name: '', status: 'Activo', date: '' });
   const [editandoId, setEditandoId] = useState(null);
 
   const esJefe = user?.role === 'Gerente';
@@ -15,30 +16,41 @@ export default function ProyectosPage() {
   useEffect(() => { cargarProyectos(); }, []);
 
   const cargarProyectos = () => {
-    fetch('http://localhost:3001/projects').then(res => res.json()).then(setProyectos);
+    // Agregado /api
+    fetch('http://localhost:3001/api/projects').then(res => res.json()).then(setProyectos);
   };
 
   const handleGuardar = async (e: React.FormEvent) => {
     e.preventDefault();
-    const url = editandoId ? `http://localhost:3001/projects/${editandoId}` : 'http://localhost:3001/projects';
+    const url = editandoId ? `http://localhost:3001/api/projects/${editandoId}` : 'http://localhost:3001/api/projects';
     const method = editandoId ? 'PUT' : 'POST';
 
-    await fetch(url, {
+    // Agregamos el managerId usando los datos de la sesión actual
+    const datosAEnviar = editandoId 
+      ? nuevoProyecto 
+      : { ...nuevoProyecto, managerId: user.id };
+
+    const response = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(nuevoProyecto)
+      body: JSON.stringify(datosAEnviar)
     });
     
-    // Diseño: Limpieza de estado incluyendo la fecha
-    cargarProyectos();
-    setNuevoProyecto({ name: '', status: 'En Progreso', date: '' }); 
-    setMostrarForm(false);
-    setEditandoId(null);
+    if (response.ok) {
+      cargarProyectos();
+      setNuevoProyecto({ name: '', status: 'Activo', date: '' }); 
+      setMostrarForm(false);
+      setEditandoId(null);
+    } else {
+      const errorData = await response.json();
+      alert(`Error al guardar: ${errorData.error}`);
+    }
   };
 
   const handleEliminar = async (id: string) => {
     if (confirm("¿Eliminar este proyecto?")) {
-      await fetch(`http://localhost:3001/projects/${id}`, { method: 'DELETE' });
+      // Agregado /api
+      await fetch(`http://localhost:3001/api/projects/${id}`, { method: 'DELETE' });
       cargarProyectos();
     }
   };
@@ -57,16 +69,29 @@ export default function ProyectosPage() {
               Hola, <span className="text-indigo-600 dark:text-indigo-400">{user.name}</span> • {user.role}
             </p>
           </div>
-          {esJefe && (
-            <button 
-              onClick={() => { setMostrarForm(!mostrarForm); setEditandoId(null); }}
-              className={`px-6 py-2.5 rounded-full font-bold shadow-lg transition-all transform hover:scale-105 ${
-                mostrarForm ? 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'
-              }`}
+          
+          {/* Contenedor flex para agrupar los botones */}
+          <div className="flex flex-wrap gap-3">
+            {/* Botón de Regresar (Visible para todos) */}
+            <Link 
+              href="/"
+              className="px-6 py-2.5 rounded-full font-bold shadow-lg bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600 transition-all transform hover:scale-105 flex items-center justify-center"
             >
-              {mostrarForm ? 'Cerrar' : '+ Nuevo Proyecto'}
-            </button>
-          )}
+              Volver al Inicio
+            </Link>
+
+            {/* Botón de Nuevo Proyecto (Visible solo para Gerentes) */}
+            {esJefe && (
+              <button 
+                onClick={() => { setMostrarForm(!mostrarForm); setEditandoId(null); }}
+                className={`px-6 py-2.5 rounded-full font-bold shadow-lg transition-all transform hover:scale-105 ${
+                  mostrarForm ? 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                }`}
+              >
+                {mostrarForm ? 'Cerrar' : '+ Nuevo Proyecto'}
+              </button>
+            )}
+          </div>
         </header>
 
         {/* Diseño: Bloque de estadísticas ajustado a 4 columnas para incluir Pendientes */}
@@ -112,9 +137,10 @@ export default function ProyectosPage() {
                   value={nuevoProyecto.status}
                   onChange={(e) => setNuevoProyecto({...nuevoProyecto, status: e.target.value})}
                 >
-                  <option value="En Progreso">En Progreso</option>
-                  <option value="Pendiente">Pendiente</option>
-                  <option value="Finalizado">Finalizado</option>
+                  <option value="Activo">Activo</option>
+                  <option value="En Pausa">En Pausa</option>
+                  <option value="Completado">Completado</option>
+                  <option value="Cancelado">Cancelado</option>
                 </select>
               </div>
               <div>
@@ -122,7 +148,7 @@ export default function ProyectosPage() {
                 <input 
                   type="date" 
                   className="w-full bg-slate-100 dark:bg-slate-700 p-3 rounded-xl border-none focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
-                  value={nuevoProyecto.date}
+                  value={nuevoProyecto.date || ''} 
                   onChange={(e) => setNuevoProyecto({...nuevoProyecto, date: e.target.value})}
                   required
                 />

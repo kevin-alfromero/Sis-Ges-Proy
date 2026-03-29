@@ -23,8 +23,44 @@
       "password": "12345",
       "role": "Gerente",
       "createdAt": "2026-03-21T04:35:12.658Z"
+    },
+    {
+      "id": "mnb9jiw007ad",
+      "name": "Cuenta de prueba",
+      "email": "prueba@gmail.com",
+      "password": "12345",
+      "role": "Gerente",
+      "createdAt": "2026-03-29T04:32:39.264Z"
+    },
+    {
+      "id": "mnb9wwamraba",
+      "name": "Usuario prueba",
+      "email": "test@gmail.com",
+      "password": "test1234",
+      "role": "Usuario",
+      "createdAt": "2026-03-29T04:43:03.166Z"
+    },
+    {
+      "id": "mnbage8vyrgp",
+      "name": "Gerente",
+      "email": "gerente@gmail.com",
+      "password": "Gerente123",
+      "role": "Gerente",
+      "createdAt": "2026-03-29T04:58:12.895Z"
     }
   ],
-  "projects": [],
+  "projects": [
+    {
+      "id": "mnbagxi0lhbn",
+      "name": "Proyecto web",
+      "description": "",
+      "managerId": "mnbage8vyrgp",
+      "managerName": "Gerente",
+      "status": "Activo",
+      "createdAt": "2026-03-29T04:58:37.848Z",
+      "updatedAt": "2026-03-29T05:07:05.354Z",
+      "date": "2026-03-31"
+    }
+  ],
   "tasks": []
 }

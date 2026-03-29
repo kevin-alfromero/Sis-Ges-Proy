@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { readDB, writeDB, generateId } = require("../middleware/db");
 
-//Obtenemos la lista de proyectos, con opción de filtrar por managerId
+//Obtenemos la lista de proyectos
 router.get("/", (req, res) => {
   const db = readDB();
   let projects = db.projects;
@@ -15,21 +15,41 @@ router.get("/", (req, res) => {
 });
 
 //  Obtiene un proyecto por ID //
-router.get("/:id", (req, res) => {
+router.put("/:id", (req, res) => {
   const db = readDB();
-  const project = db.projects.find((p) => p.id === req.params.id);
+  const index = db.projects.findIndex((p) => p.id === req.params.id);
 
-  if (!project) {
+  if (index === -1) {
     return res.status(404).json({ error: "Proyecto no encontrado." });
   }
 
-  res.json(project);
+  // Agregamos 'date' a la extracción
+  const { name, description, status, date } = req.body;
+  const statusValidos = ["Activo", "En Pausa", "Completado", "Cancelado"];
+
+  if (status && !statusValidos.includes(status)) {
+    return res.status(400).json({ error: `Estado inválido. Use: ${statusValidos.join(", ")}` });
+  }
+
+  // Actualizamos los campos enviados, incluyendo la fecha
+  db.projects[index] = {
+    ...db.projects[index],
+    ...(name && { name }),
+    ...(description !== undefined && { description }),
+    ...(status && { status }),
+    ...(date && { date }), // GUARDAMOS LA NUEVA FECHA AQUÍ
+    updatedAt: new Date().toISOString(),
+  };
+
+  writeDB(db);
+  res.json({ message: "Proyecto actualizado.", project: db.projects[index] });
 });
 
 // Crea un nuevo proyecto
 
 router.post("/", (req, res) => {
-  const { name, description, managerId } = req.body;
+  // Agrega la fecha
+  const { name, description, managerId, date, status } = req.body;
 
   if (!name || !managerId) {
     return res.status(400).json({ error: "Nombre y managerId son requeridos." });
@@ -37,7 +57,6 @@ router.post("/", (req, res) => {
 
   const db = readDB();
 
-  // Verificar que el manager existe y tiene rol Gerente
   const manager = db.users.find((u) => u.id === managerId);
   if (!manager) {
     return res.status(404).json({ error: "El usuario (manager) no existe." });
@@ -52,7 +71,8 @@ router.post("/", (req, res) => {
     description: description || "",
     managerId,
     managerName: manager.name,
-    status: "Activo",
+    status: status || "Activo", // Ahora toma el estado del formulario
+    date: date || "",           // GUARDAMOS LA FECHA AQUÍ
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
