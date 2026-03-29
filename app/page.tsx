@@ -3,61 +3,45 @@
 import { useEffect, useState } from "react";
 
 export default function Dashboard() {
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [newTask, setNewTask] = useState("");
+  const [data, setData] = useState<any[]>([]);
+  const [view, setView] = useState("tasks"); // tasks | projects
 
-  //Obtener tareas
-  const fetchData = () => {
-    fetch("http://localhost:3001/tasks")
-      .then(res => res.json())
-      .then(setTasks);
+  const fetchData = async () => {
+    try {
+      const endpoint =
+        view === "tasks"
+          ? "http://localhost:3001/api/tasks"
+          : "http://localhost:3001/api/projects";
+
+      const res = await fetch(endpoint);
+      const result = await res.json();
+
+      setData(Array.isArray(result) ? result : []);
+    } catch (error) {
+      console.error("Error:", error);
+      setData([]);
+    }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [view]);
 
-  // Crear tarea
-  const handleAddTask = () => {
-    if (!newTask.trim()) return;
+  // cálculos (adaptables)
+  const total = data.length;
 
-    fetch("http://localhost:3001/tasks", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        status: "pendiente",
-        title: newTask
-      })
-    }).then(() => {
-      setNewTask("");
-      fetchData();
-    });
-  };
+  const completed =
+    view === "tasks"
+      ? data.filter(d => d.status === "completada").length
+      : data.filter(d => d.status === "finalizado").length;
 
-  // Cambiar estado
-  const toggleTaskStatus = (task: any) => {
-    const newStatus =
-      task.status === "completada" ? "pendiente" : "completada";
+  const pending =
+    view === "tasks"
+      ? data.filter(d => d.status === "pendiente").length
+      : data.filter(d => d.status !== "finalizado").length;
 
-    fetch(`http://localhost:3001/tasks/${task.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        status: newStatus
-      })
-    }).then(() => fetchData());
-  };
-
-  //calculos
-  const totalTasks = tasks.length;
-  const completed = tasks.filter(t => t.status === "completada").length;
-  const pending = tasks.filter(t => t.status === "pendiente").length;
   const progress =
-    totalTasks > 0 ? (completed / totalTasks) * 100 : 0;
+    total > 0 ? (completed / total) * 100 : 0;
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -65,18 +49,45 @@ export default function Dashboard() {
         Dashboard
       </h1>
 
+      {/* Selector */}
+      <div className="flex gap-4 mb-6">
+        <button
+          onClick={() => setView("tasks")}
+          className={`px-4 py-2 rounded ${
+            view === "tasks"
+              ? "bg-blue-500 text-white"
+              : "bg-white"
+          }`}
+        >
+          Tareas
+        </button>
+
+        <button
+          onClick={() => setView("projects")}
+          className={`px-4 py-2 rounded ${
+            view === "projects"
+              ? "bg-blue-500 text-white"
+              : "bg-white"
+          }`}
+        >
+          Proyectos
+        </button>
+      </div>
+
       {/* Tarjetas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
         <div className="bg-white p-6 rounded-xl shadow-md">
-          <h2 className="text-gray-500">Total Tareas</h2>
+          <h2 className="text-gray-500">
+            Total {view === "tasks" ? "Tareas" : "Proyectos"}
+          </h2>
           <p className="text-2xl font-bold text-blue-600">
-            {totalTasks}
+            {total}
           </p>
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow-md">
-          <h2 className="text-gray-500">Completadas</h2>
+          <h2 className="text-gray-500">Completados</h2>
           <p className="text-2xl font-bold text-green-600">
             {completed}
           </p>
@@ -107,58 +118,6 @@ export default function Dashboard() {
         <p className="mt-2 text-sm text-gray-600">
           {progress.toFixed(0)}% completado
         </p>
-      </div>
-
-      {/* Crear tarea */}
-      <div className="mt-8 bg-white p-6 rounded-xl shadow-md">
-        <h2 className="text-gray-700 font-semibold mb-4">
-          Crear Tarea
-        </h2>
-
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            placeholder="Escribe una tarea..."
-            className="border p-2 rounded w-full text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <button
-            onClick={handleAddTask}
-            className="bg-blue-500 text-white px-4 rounded"
-          >
-            Agregar
-          </button>
-        </div>
-      </div>
-
-      {/* Lista de tareas */}
-      <div className="mt-8 bg-white p-6 rounded-xl shadow-md">
-        <h2 className="text-gray-700 font-semibold mb-4">
-          Tareas
-        </h2>
-
-        {tasks.map(t => (
-          <div
-            key={t.id}
-            className="flex justify-between items-center border-b py-2"
-          >
-            <span className="text-black font-medium">
-              {t.title || `Tarea #${t.id}`}
-            </span>
-
-            <button
-              onClick={() => toggleTaskStatus(t)}
-              className={
-                t.status === "completada"
-                  ? "bg-green-500 text-white px-3 py-1 rounded"
-                  : "bg-red-500 text-white px-3 py-1 rounded"
-              }
-            >
-              {t.status}
-            </button>
-          </div>
-        ))}
       </div>
     </div>
   );
