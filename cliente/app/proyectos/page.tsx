@@ -94,7 +94,7 @@ export default function ProyectosPage() {
           </div>
         </header>
 
-        {/* Diseño: Bloque de estadísticas ajustado a 4 columnas para incluir Pendientes */}
+       {/* Diseño: Bloque de estadísticas ajustado a los estados reales */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
             <p className="text-xs font-bold text-slate-400 uppercase">Total Proyectos</p>
@@ -102,16 +102,24 @@ export default function ProyectosPage() {
           </div>
           <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
             <p className="text-xs font-bold text-slate-400 uppercase">En Progreso</p>
-            <p className="text-2xl font-black text-blue-500">{proyectos.filter((p:any) => p.status === 'En Progreso').length}</p>
+            {/* Cuenta los Activos */}
+            <p className="text-2xl font-black text-blue-500">
+              {proyectos.filter((p:any) => p.status === 'Activo').length}
+            </p>
           </div>
-          {/* Diseño: Nuevo cuadro para proyectos Pendientes */}
           <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
             <p className="text-xs font-bold text-slate-400 uppercase">Pendientes</p>
-            <p className="text-2xl font-black text-amber-500">{proyectos.filter((p:any) => p.status === 'Pendiente').length}</p>
+            {/* Cuenta los En Pausa */}
+            <p className="text-2xl font-black text-amber-500">
+              {proyectos.filter((p:any) => p.status === 'En Pausa').length}
+            </p>
           </div>
           <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
             <p className="text-xs font-bold text-slate-400 uppercase">Finalizados</p>
-            <p className="text-2xl font-black text-emerald-500">{proyectos.filter((p:any) => p.status === 'Finalizado').length}</p>
+            {/* Cuenta los Completados O Cancelados */}
+            <p className="text-2xl font-black text-emerald-500">
+              {proyectos.filter((p:any) => p.status === 'Completado' || p.status === 'Cancelado').length}
+            </p>
           </div>
         </div>
 
