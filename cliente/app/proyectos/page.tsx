@@ -10,6 +10,7 @@ export default function ProyectosPage() {
   // Diseño: Agregado campo 'date' al estado inicial
  const [nuevoProyecto, setNuevoProyecto] = useState({ name: '', status: 'Activo', date: '' });
   const [editandoId, setEditandoId] = useState(null);
+   const [modalEliminar, setModalEliminar] = useState(null);
 
   const esJefe = user?.role === 'Gerente';
 
@@ -200,7 +201,7 @@ export default function ProyectosPage() {
                   {esJefe && (
                     <td className="p-4 text-right space-x-3">
                       <button onClick={() => { setNuevoProyecto(p); setEditandoId(p.id); setMostrarForm(true); }} className="text-indigo-600 dark:text-indigo-400 font-bold text-sm hover:underline">Editar</button>
-                      <button onClick={() => handleEliminar(p.id)} className="text-rose-500 font-bold text-sm hover:underline">Eliminar</button>
+                      <button onClick={() => setModalEliminar(p.id)} className="text-rose-500 font-bold text-sm hover:underline">Eliminar</button>
                     </td>
                   )}
                 </tr>
@@ -208,6 +209,17 @@ export default function ProyectosPage() {
             </tbody>
           </table>
         </div>
+          {modalEliminar && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-xl shadow-xl text-center">
+                <p className="font-bold mb-4 text-blue-500">¿Seguro que quieres eliminar este proyecto?</p>
+                <div className="flex gap-3 justify-center">
+                  <button onClick={() => setModalEliminar(null)} className="px-4 py-2 bg-gray-200 rounded-lg">Cancelar</button>
+                  <button onClick={async () => { await fetch(`http://localhost:3001/api/projects/${modalEliminar}`, { method: 'DELETE' }); setModalEliminar(null); cargarProyectos(); }} className="px-4 py-2 bg-rose-500 text-white rounded-lg">Eliminar</button>
+                </div>
+              </div>
+            </div>
+          )}
       </div>
     </div>
   );

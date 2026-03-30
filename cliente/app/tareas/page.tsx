@@ -10,6 +10,7 @@ export default function TareasPage() {
   const [usuarios, setUsuarios] = useState([]);
   const [mostrarForm, setMostrarForm] = useState(false);
   const [editandoId, setEditandoId] = useState(null);
+  const [modalEliminar, setModalEliminar] = useState(null);
   
   // Estado inicial adaptado al backend de tareas
   const [nuevaTarea, setNuevaTarea] = useState({ 
@@ -262,7 +263,7 @@ export default function TareasPage() {
                   {esJefe && (
                     <td className="p-4 text-right space-x-3">
                       <button onClick={() => { setNuevaTarea(t); setEditandoId(t.id); setMostrarForm(true); }} className="text-indigo-600 dark:text-indigo-400 font-bold text-sm hover:underline">Editar</button>
-                      <button onClick={() => handleEliminar(t.id)} className="text-rose-500 font-bold text-sm hover:underline">Eliminar</button>
+                      <button onClick={() => setModalEliminar(t.id)} className="text-rose-500 font-bold text-sm hover:underline">Eliminar</button>
                     </td>
                   )}
                 </tr>
@@ -270,6 +271,17 @@ export default function TareasPage() {
             </tbody>
           </table>
         </div>
+                  {modalEliminar && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-xl shadow-xl text-center">
+                <p className="font-bold mb-4 text-blue-500">¿Seguro que quieres eliminar esta tarea?</p>
+                <div className="flex gap-3 justify-center">
+                  <button onClick={() => setModalEliminar(null)} className="px-4 py-2 bg-gray-200 rounded-lg">Cancelar</button>
+                  <button onClick={async () => { await fetch(`http://localhost:3001/api/tasks/${modalEliminar}`, { method: 'DELETE' }); setModalEliminar(null); cargarDatos(); }} className="px-4 py-2 bg-rose-500 text-white rounded-lg">Eliminar</button>
+                </div>
+              </div>
+            </div>
+          )}
       </div>
     </div>
   );
