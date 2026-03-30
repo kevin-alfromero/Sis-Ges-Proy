@@ -24,13 +24,19 @@ export default function Home() {
               Tu rol actual es: <span className="font-bold">{user.role}</span>
             </p>
 
-            {/* --- ESTO ES LO NUEVO: BOTONES DE NAVEGACIÓN --- */}
+            {/* --- BOTONES DE NAVEGACIÓN --- */}
             <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
               <Link
                 href="/proyectos"
-                className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-all font-bold shadow-md"
+                className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-all font-bold shadow-md text-center"
               >
                 Ir a Proyectos
+              </Link>
+              <Link
+                href="/tareas"
+                className="px-6 py-3 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-all font-bold shadow-md text-center"
+              >
+                Ir a Tareas
               </Link>
               
               <button
