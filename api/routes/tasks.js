@@ -34,7 +34,8 @@ router.get("/:id", (req, res) => {
 
 // Crea una nueva tarea
 router.post("/", (req, res) => {
-  const { title, description, projectId, assignedTo, priority = "Media" } = req.body;
+  // 1. Agrega 'status' a la desestructuración
+  const { title, description, projectId, assignedTo, priority = "Media", status = "Pendiente" } = req.body;
 
   if (!title || !projectId) {
     return res.status(400).json({ error: "Título y projectId son requeridos." });
@@ -45,15 +46,19 @@ router.post("/", (req, res) => {
     return res.status(400).json({ error: `Prioridad inválida. Use: ${prioridadesValidas.join(", ")}` });
   }
 
+  // 2. Valida que el estado entrante sea correcto
+  const statusValidos = ["Pendiente", "En Progreso", "Completada", "Cancelada"];
+  if (!statusValidos.includes(status)) {
+    return res.status(400).json({ error: `Estado inválido. Use: ${statusValidos.join(", ")}` });
+  }
+
   const db = readDB();
 
-  // Verificar que el proyecto existe
   const project = db.projects.find((p) => p.id === projectId);
   if (!project) {
     return res.status(404).json({ error: "El proyecto no existe." });
   }
 
-  // Verificar que el usuario asignado existe (si se envió)
   let assignedUserName = null;
   if (assignedTo) {
     const user = db.users.find((u) => u.id === assignedTo);
@@ -72,7 +77,7 @@ router.post("/", (req, res) => {
     assignedTo: assignedTo || null,
     assignedUserName,
     priority,
-    status: "Pendiente",
+    status, // 3. Usa la variable recibida en lugar del texto fijo "Pendiente"
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -81,7 +86,6 @@ router.post("/", (req, res) => {
   writeDB(db);
   res.status(201).json({ message: "Tarea creada.", task: nuevaTarea });
 });
-
 
 // Actualiza una tarea existente
 router.put("/:id", (req, res) => {

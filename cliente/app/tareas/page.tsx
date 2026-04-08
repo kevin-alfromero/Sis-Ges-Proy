@@ -45,20 +45,19 @@ export default function TareasPage() {
   };
 
   const handleGuardar = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const url = editandoId ? `http://localhost:3001/api/tasks/${editandoId}` : 'http://localhost:3001/api/tasks';
-    const method = editandoId ? 'PUT' : 'POST';
+  e.preventDefault();
+  const url = editandoId ? `http://localhost:3001/api/tasks/${editandoId}` : 'http://localhost:3001/api/tasks';
+  const method = editandoId ? 'PUT' : 'POST';
 
-    // Preparamos los datos, asegurando que si no eligen usuario, se envíe como null
-    let datosAEnviar = { ...nuevaTarea };
-    if (!datosAEnviar.assignedTo) {
-      datosAEnviar.assignedTo = null;
-    }
-    // Si es una tarea nueva y no se seleccionó proyecto, toma el primero por defecto
-    if (!datosAEnviar.projectId && proyectos.length > 0) {
-      datosAEnviar.projectId = proyectos[0].id;
-    }
+  let datosAEnviar = { ...nuevaTarea };
+  if (!datosAEnviar.assignedTo) {
+    datosAEnviar.assignedTo = null;
+  }
+  if (!datosAEnviar.projectId && proyectos.length > 0) {
+    datosAEnviar.projectId = proyectos[0].id;
+  }
 
+  try {
     const response = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
@@ -74,15 +73,11 @@ export default function TareasPage() {
       const errorData = await response.json();
       alert(`Error al guardar: ${errorData.error}`);
     }
-  };
-
-  const handleEliminar = async (id: string) => {
-    if (confirm("¿Eliminar esta tarea?")) {
-      await fetch(`http://localhost:3001/api/tasks/${id}`, { method: 'DELETE' });
-      cargarDatos();
-    }
-  };
-
+  } catch (error) {
+    console.error("Error en la solicitud:", error);
+    alert("Ocurrió un error inesperado al comunicarse con el servidor.");
+  }
+};
   if (!user) return <div className="p-10 text-center">Cargando sesión...</div>;
 
   return (
